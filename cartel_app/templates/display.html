@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Vista Cartel{% endblock %}
+{% block body_class %}display-body{% endblock %}
+
+{% block content %}
+<div class="display-toolbar" id="display-toolbar">
+    <div class="toolbar-group">
+        <button class="btn btn-sm btn-light" id="btn-display-fullscreen">
+            <i class="bi bi-arrows-fullscreen"></i> Pantalla completa
+        </button>
+        <button class="btn btn-sm btn-outline-light" id="btn-toggle-pause">
+            <i class="bi bi-pause-fill"></i> Pausar
+        </button>
+        <button class="btn btn-sm btn-outline-light" id="btn-reset-motion">
+            <i class="bi bi-arrow-repeat"></i> Reiniciar
+        </button>
+    </div>
+    <div class="toolbar-group">
+        <span class="toolbar-tip">Atajos: F fullscreen · Espacio pausa · R reinicia</span>
+        <a class="btn btn-sm btn-outline-warning" href="{{ url_for('main.index') }}">
+            <i class="bi bi-sliders"></i> Volver al editor
+        </a>
+    </div>
+</div>
+
+<div id="display-stage" class="display-stage">
+    <div class="sign-panel">
+        <div class="sign-track">
+            <div class="sign-text" id="sign-text-display">{{ config.message }}</div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.DISPLAY_CONFIG = {{ config|tojson }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/display.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,424 @@
+:root {
+    --bg-app: #0a0a0f;
+    --panel-bg: rgba(15, 18, 28, 0.92);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --text-main: #f8f9fa;
+    --text-soft: #adb5bd;
+    --accent: #ff7b00;
+    --warning: #ffd166;
+    --radius: 22px;
+    --shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.35);
+    --font-orbitron: "Orbitron", sans-serif;
+    --font-bebas: "Bebas Neue", sans-serif;
+    --font-rubik: "Rubik", sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    --font-pacifico: "Pacifico", cursive;
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(circle at top left, rgba(255, 123, 0, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(255, 209, 102, 0.09), transparent 28%),
+        linear-gradient(180deg, #09090c 0%, #11131b 100%);
+    color: var(--text-main);
+    font-family: var(--font-rubik);
+}
+
+.page-title {
+    font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.page-subtitle,
+.form-hint {
+    color: var(--text-soft);
+}
+
+.eyebrow {
+    color: var(--warning);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+}
+
+.panel-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    padding: 1.25rem;
+    backdrop-filter: blur(12px);
+}
+
+.section-title {
+    font-size: 1.04rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    color: #e9ecef;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.form-control,
+.form-select,
+.form-control-color {
+    border-radius: 14px;
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: #f8f9fa;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-control-color:focus {
+    border-color: rgba(255, 123, 0, 0.65);
+    box-shadow: 0 0 0 0.2rem rgba(255, 123, 0, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.form-select option {
+    color: #111;
+}
+
+.form-check-input {
+    width: 2.8rem;
+    height: 1.5rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.form-range::-webkit-slider-thumb {
+    background: var(--accent);
+}
+
+.form-range::-moz-range-thumb {
+    background: var(--accent);
+}
+
+.range-value {
+    color: var(--warning);
+    font-weight: 700;
+}
+
+.btn-accent {
+    background: linear-gradient(135deg, #ff7b00, #ff9e00);
+    border: none;
+    color: #111;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(255, 123, 0, 0.28);
+}
+
+.btn-accent:hover {
+    color: #111;
+    filter: brightness(1.05);
+}
+
+.emoji-toolbar {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.emoji-btn {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    border-radius: 12px;
+    min-width: 2.8rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.emoji-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 123, 0, 0.55);
+}
+
+.preview-shell {
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #050505;
+}
+
+.sign-stage,
+.display-stage {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.display-stage {
+    min-height: 100vh;
+}
+
+.sign-panel {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    min-height: 240px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.sign-panel::before,
+.sign-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.sign-panel::before {
+    background:
+        radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.08));
+    mix-blend-mode: screen;
+}
+
+.sign-panel.has-grid::after {
+    background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 16px 16px;
+    opacity: 0.26;
+}
+
+.sign-track {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sign-text {
+    display: inline-block;
+    will-change: transform;
+    user-select: none;
+    white-space: nowrap;
+    line-height: 1.08;
+    transform: translate3d(0, 0, 0);
+}
+
+.sign-text.is-marquee {
+    animation-name: marqueeMove;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: var(--anim-duration, 18s);
+}
+
+.sign-text.is-bounce {
+    animation-name: bounceMove;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-duration: var(--anim-duration, 18s);
+}
+
+.sign-text.is-static {
+    animation: none !important;
+    transform: translate3d(0, 0, 0) !important;
+}
+
+.sign-text.is-paused {
+    animation-play-state: paused !important;
+}
+
+.sign-text.is-blink {
+    animation-name: inherit, blinkPulse;
+}
+
+.sign-text.blink-only {
+    animation: blinkPulse 1.2s infinite;
+}
+
+@keyframes marqueeMove {
+    from {
+        transform: translate3d(var(--move-from, 100%), 0, 0);
+    }
+    to {
+        transform: translate3d(var(--move-to, -100%), 0, 0);
+    }
+}
+
+@keyframes bounceMove {
+    from {
+        transform: translate3d(var(--bounce-from, 0px), 0, 0);
+    }
+    to {
+        transform: translate3d(var(--bounce-to, 0px), 0, 0);
+    }
+}
+
+@keyframes blinkPulse {
+    0%, 40%, 100% { opacity: 1; }
+    20%, 60% { opacity: 0.45; }
+}
+
+.sign-stage.theme-neon .sign-panel,
+.display-stage.theme-neon .sign-panel {
+    background:
+        radial-gradient(circle at center, rgba(255, 123, 0, 0.08), transparent 42%),
+        linear-gradient(180deg, rgba(13, 13, 18, 0.98), rgba(0, 0, 0, 1));
+}
+
+.sign-stage.theme-led .sign-panel,
+.display-stage.theme-led .sign-panel {
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.05), transparent 42%),
+        linear-gradient(180deg, #090b0f, #020202);
+}
+
+.sign-stage.theme-lcd .sign-panel,
+.display-stage.theme-lcd .sign-panel {
+    background:
+        linear-gradient(180deg, rgba(8, 15, 8, 0.96), rgba(2, 8, 2, 1));
+}
+
+.sign-stage.theme-billboard .sign-panel,
+.display-stage.theme-billboard .sign-panel {
+    background:
+        radial-gradient(circle at center, rgba(255, 180, 0, 0.06), transparent 44%),
+        linear-gradient(180deg, rgba(18, 18, 24, 0.98), rgba(6, 6, 8, 1));
+}
+
+.sign-stage.theme-minimal .sign-panel,
+.display-stage.theme-minimal .sign-panel {
+    background: linear-gradient(180deg, rgba(18, 18, 24, 0.98), rgba(5, 5, 8, 1));
+}
+
+.display-body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+}
+
+.display-toolbar {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 30;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(8, 8, 10, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    padding: 0.75rem 0.9rem;
+    backdrop-filter: blur(10px);
+    opacity: 0.15;
+    transition: opacity 0.2s ease;
+}
+
+.display-toolbar:hover,
+.display-toolbar.is-visible {
+    opacity: 1;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 0.55rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.toolbar-tip {
+    color: #e9ecef;
+    font-size: 0.85rem;
+}
+
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.preset-card {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1rem;
+}
+
+.preset-card-top {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.preset-name {
+    font-weight: 700;
+}
+
+.preset-meta,
+.preset-snippet,
+.empty-state,
+.chip {
+    color: var(--text-soft);
+}
+
+.preset-snippet {
+    margin-top: 0.8rem;
+    font-size: 0.96rem;
+}
+
+.preset-actions {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+.chip {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 992px) {
+    .display-toolbar {
+        left: 8px;
+        right: 8px;
+        top: 8px;
+    }
+
+    .toolbar-tip {
+        display: none;
+    }
+
+    .sign-stage,
+    .display-stage {
+        min-height: 320px;
+    }
+}
