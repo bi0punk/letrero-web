@@ -10,7 +10,7 @@ from .defaults import DEFAULT_CONFIG
 bp = Blueprint("main", __name__)
 
 
-ALLOWED_STYLES = {"neon", "led", "lcd", "billboard", "minimal"}
+ALLOWED_STYLES = {"neon", "led", "literal_led", "lcd", "billboard", "minimal"}
 ALLOWED_ANIMATIONS = {"marquee", "bounce", "static"}
 ALLOWED_DIRECTIONS = {"left", "right"}
 ALLOWED_FONTS = {"orbitron", "bebas", "rubik", "mono", "pacifico"}

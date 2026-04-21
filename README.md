@@ -9,7 +9,7 @@ Incluye editor visual, emojis rápidos, presets persistidos en SQLite, vista pre
 - Vista previa en tiempo real
 - Modos visuales:
   - Neón
-  - LED Matrix
+  - LED Matrix, LED literal
   - LCD Retro
   - Billboard
   - Minimal
@@ -233,6 +233,59 @@ Si luego quieres una versión 100% offline, puedes:
   }
 }
 ```
+
+---
+
+## MVP → mejora → producción
+
+### MVP actual
+- Editor visual
+- Presets
+- Fullscreen
+- Animación
+- Emojis
+
+### Mejoras naturales
+- playlist de mensajes
+- programación por horarios
+- rotación automática entre presets
+- websocket para cambio en vivo sin recargar
+- modo kiosko
+- carga de logos o imágenes
+- fondos en video
+- control remoto desde móvil
+- autenticación
+- multiusuario
+
+### Producción
+Para llevarlo a producción local o intranet:
+- gunicorn
+- nginx
+- systemd
+- reverse proxy
+- autenticación básica
+- rate limit
+- assets locales en vez de CDN
+
+---
+
+## Idea de despliegue en una Raspberry Pi o mini PC
+
+```text
+[ Navegador admin ] ---> [ Flask editor ]
+                               |
+                               +--> [ SQLite presets ]
+                               |
+                               +--> [ /display en otra pantalla/TV ]
+```
+
+Esto sirve muy bien para:
+- locales comerciales
+- ferias
+- señalética digital simple
+- promociones internas
+- recepciones
+- salas de espera
 
 ---
 

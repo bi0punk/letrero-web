@@ -107,7 +107,7 @@ function encodeConfig(config) {
 }
 
 function applyThemeClasses(root, styleName) {
-    root.classList.remove("theme-neon", "theme-led", "theme-lcd", "theme-billboard", "theme-minimal");
+    root.classList.remove("theme-neon", "theme-led", "theme-literal-led", "theme-lcd", "theme-billboard", "theme-minimal");
     root.classList.add(`theme-${styleName}`);
 }
 
@@ -133,6 +133,52 @@ function calculateAnimationBounds(root, textNode, direction, mode) {
     }
 
     panel.style.minHeight = `${Math.max(220, Math.min(window.innerHeight * 0.72, 420))}px`;
+}
+
+function applyLiteralLedStyle(root, textNode, config, fontSize, glow, brightness) {
+    const panel = root.querySelector(".sign-panel");
+    const ornament = root.querySelector(".led-ornament");
+    const dotSize = Math.max(10, Math.round(fontSize / 8));
+    const glowColor = hexToRgba(config.text_color, Math.min(0.98, 0.22 + glow / 95));
+    const accentGlow = hexToRgba(config.accent_color, Math.min(0.95, 0.22 + glow / 105));
+
+    if (ornament) {
+        ornament.style.setProperty("--ornament-color", config.accent_color || "#2c5cff");
+    }
+    if (panel) {
+        panel.style.setProperty("--ornament-color", config.accent_color || "#2c5cff");
+    }
+
+    textNode.classList.add("literal-led-text");
+    textNode.style.color = "transparent";
+    textNode.style.webkitTextFillColor = "transparent";
+    textNode.style.backgroundImage = `radial-gradient(circle, ${hexToRgba(config.text_color, 1)} 0 26%, ${hexToRgba(config.text_color, 0.92)} 27% 46%, ${hexToRgba(config.text_color, 0.24)} 47% 56%, transparent 57%)`;
+    textNode.style.backgroundSize = `${dotSize}px ${dotSize}px`;
+    textNode.style.backgroundRepeat = "repeat";
+    textNode.style.backgroundPosition = "center center";
+    textNode.style.webkitBackgroundClip = "text";
+    textNode.style.backgroundClip = "text";
+    textNode.style.filter = `brightness(${brightness}%) contrast(118%)`;
+    textNode.style.textShadow = `0 0 4px ${glowColor}, 0 0 14px ${glowColor}, 0 0 28px ${accentGlow}`;
+}
+
+function clearLiteralLedStyle(root, textNode) {
+    const panel = root.querySelector(".sign-panel");
+    const ornament = root.querySelector(".led-ornament");
+    textNode.classList.remove("literal-led-text");
+    textNode.style.backgroundImage = "none";
+    textNode.style.backgroundSize = "initial";
+    textNode.style.backgroundRepeat = "initial";
+    textNode.style.backgroundPosition = "initial";
+    textNode.style.webkitBackgroundClip = "border-box";
+    textNode.style.backgroundClip = "border-box";
+    textNode.style.webkitTextFillColor = "";
+    if (ornament) {
+        ornament.style.removeProperty("--ornament-color");
+    }
+    if (panel) {
+        panel.style.removeProperty("--ornament-color");
+    }
 }
 
 function renderSign(root, textNode, config) {
@@ -169,6 +215,7 @@ function renderSign(root, textNode, config) {
     textNode.style.fontFamily = getFontFamily(config.font_family);
     textNode.style.fontSize = `clamp(32px, ${fontSize / 12}vw, ${fontSize}px)`;
     textNode.style.letterSpacing = `${letterSpacing}px`;
+    clearLiteralLedStyle(root, textNode);
     textNode.style.color = config.text_color;
     textNode.style.filter = `brightness(${brightness}%)`;
 
@@ -181,6 +228,8 @@ function renderSign(root, textNode, config) {
             textShadow = `0 0 8px ${glowColor}, 0 0 18px ${glowColor}, 0 0 36px ${accentGlow}, 0 0 64px ${accentGlow}`;
         } else if (style === "led") {
             textShadow = `0 0 8px ${glowColor}, 0 0 18px ${accentGlow}`;
+        } else if (style === "literal_led") {
+            textShadow = `0 0 4px ${glowColor}, 0 0 14px ${glowColor}, 0 0 28px ${accentGlow}`;
         } else if (style === "lcd") {
             textShadow = `0 0 6px ${glowColor}, 0 0 16px ${glowColor}`;
         } else if (style === "billboard") {
@@ -191,6 +240,10 @@ function renderSign(root, textNode, config) {
     }
     textNode.style.textShadow = textShadow;
     textNode.style.webkitTextStroke = config.outline ? `1px ${hexToRgba(config.accent_color, 0.45)}` : "0 transparent";
+
+    if (style === "literal_led") {
+        applyLiteralLedStyle(root, textNode, config, fontSize, glow, brightness);
+    }
 
     textNode.classList.remove("is-marquee", "is-bounce", "is-static", "blink-only", "is-paused");
     if (animationMode === "marquee") {
