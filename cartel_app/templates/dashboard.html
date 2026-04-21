@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% block title %}Editor de Carteles LED / Neón{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 py-3 px-lg-4 py-lg-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <div>
+            <div class="eyebrow mb-1">🔴 LED Sign Studio v2.0</div>
+            <h1 class="page-title mb-1">Editor de Carteles LED</h1>
+            <p class="page-subtitle mb-0">Multi-color por frases, estilos avanzados y vista cartel dedicada.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-light" id="btn-load-defaults">
+                <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+            </button>
+            <button class="btn btn-outline-warning" id="btn-copy-display-link">
+                <i class="bi bi-link-45deg"></i> Copiar link
+            </button>
+            <button class="btn btn-accent" id="btn-open-display">
+                <i class="bi bi-display"></i> Abrir cartel
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- LEFT PANEL -->
+        <div class="col-12 col-xl-4">
+            <div class="panel-card">
+                <div class="section-title">⚙️ Configuración del cartel</div>
+                <form id="config-form" class="config-form">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del preset</label>
+                        <input type="text" class="form-control" id="preset_name" maxlength="80" value="{{ initial_config.preset_name }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Texto
+                            <span class="badge badge-led ms-1">Usa | para separar frases con colores distintos</span>
+                        </label>
+                        <textarea class="form-control" id="message" rows="4" maxlength="500">{{ initial_config.message }}</textarea>
+                        <div class="form-hint mt-1">Ejemplo: <code>ABIERTO|KIOSCO|PIZZA</code> → cada frase en color diferente</div>
+                    </div>
+
+                    <!-- Multi-color palette preview -->
+                    <div class="led-palette-row mb-3" id="palette-preview">
+                        <div class="palette-label">Paleta LED:</div>
+                        <div class="palette-dots" id="palette-dots"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Emojis rápidos</label>
+                        <div class="emoji-toolbar" id="emoji-toolbar">
+                            <button type="button" class="emoji-btn">🔥</button>
+                            <button type="button" class="emoji-btn">🚀</button>
+                            <button type="button" class="emoji-btn">⚡</button>
+                            <button type="button" class="emoji-btn">✅</button>
+                            <button type="button" class="emoji-btn">📢</button>
+                            <button type="button" class="emoji-btn">💡</button>
+                            <button type="button" class="emoji-btn">🎉</button>
+                            <button type="button" class="emoji-btn">🎵</button>
+                            <button type="button" class="emoji-btn">⭐</button>
+                            <button type="button" class="emoji-btn">💥</button>
+                            <button type="button" class="emoji-btn">🔴</button>
+                            <button type="button" class="emoji-btn">🟡</button>
+                            <button type="button" class="emoji-btn">🟢</button>
+                            <button type="button" class="emoji-btn">🔵</button>
+                            <button type="button" class="emoji-btn">⬛</button>
+                            <button type="button" class="emoji-btn" data-insert="|"> | </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">Estilo LED</label>
+                            <select class="form-select" id="style">
+                                <option value="literal_led">🔴 LED Matrix</option>
+                                <option value="neon">💡 Neón clásico</option>
+                                <option value="pixel">🟥 Pixel grid</option>
+                                <option value="plasma">🌈 Plasma</option>
+                                <option value="retro">🪟 Retro neon</option>
+                                <option value="led">⚡ LED simple</option>
+                                <option value="lcd">🟩 LCD Retro</option>
+                                <option value="billboard">🏙️ Billboard</option>
+                                <option value="minimal">◻️ Minimal</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Fuente</label>
+                            <select class="form-select" id="font_family">
+                                <option value="orbitron">Orbitron</option>
+                                <option value="bebas">Bebas Neue</option>
+                                <option value="digital">Share Tech Mono</option>
+                                <option value="rubik">Rubik</option>
+                                <option value="mono">Monospace</option>
+                                <option value="pacifico">Pacifico</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Animación</label>
+                            <select class="form-select" id="animation_mode">
+                                <option value="marquee">Carrusel continuo</option>
+                                <option value="bounce">Lado a lado</option>
+                                <option value="static">Estático</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Dirección</label>
+                            <select class="form-select" id="direction">
+                                <option value="left">← Izquierda</option>
+                                <option value="right">→ Derecha</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Efecto de texto</label>
+                            <select class="form-select" id="text_effect">
+                                <option value="none">— Ninguno</option>
+                                <option value="rainbow">🌈 Rainbow</option>
+                                <option value="fire">🔥 Fuego</option>
+                                <option value="ice">❄️ Hielo</option>
+                                <option value="matrix">💚 Matrix</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-4">
+                            <label class="form-label">Texto</label>
+                            <input type="color" class="form-control form-control-color w-100" id="text_color" value="{{ initial_config.text_color }}">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Fondo</label>
+                            <input type="color" class="form-control form-control-color w-100" id="background_color" value="{{ initial_config.background_color }}">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Acento</label>
+                            <input type="color" class="form-control form-control-color w-100" id="accent_color" value="{{ initial_config.accent_color }}">
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Tamaño de fuente <span id="font_size_value" class="range-value"></span></label>
+                        <input type="range" class="form-range" id="font_size" min="32" max="280" step="2" value="{{ initial_config.font_size }}">
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Velocidad <span id="speed_value" class="range-value"></span></label>
+                        <input type="range" class="form-range" id="speed" min="4" max="60" step="1" value="{{ initial_config.speed }}">
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Glow / brillo neón <span id="glow_value" class="range-value"></span></label>
+                        <input type="range" class="form-range" id="glow" min="0" max="100" step="1" value="{{ initial_config.glow }}">
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Brillo general <span id="brightness_value" class="range-value"></span></label>
+                        <input type="range" class="form-range" id="brightness" min="30" max="180" step="1" value="{{ initial_config.brightness }}">
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Espaciado letras <span id="letter_spacing_value" class="range-value"></span></label>
+                        <input type="range" class="form-range" id="letter_spacing" min="0" max="40" step="1" value="{{ initial_config.letter_spacing }}">
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-6">
+                            <label class="form-label">Padding H <span id="padding_x_value" class="range-value"></span></label>
+                            <input type="range" class="form-range" id="padding_x" min="0" max="160" step="2" value="{{ initial_config.padding_x }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Padding V <span id="padding_y_value" class="range-value"></span></label>
+                            <input type="range" class="form-range" id="padding_y" min="0" max="100" step="2" value="{{ initial_config.padding_y }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Borde redondeado <span id="border_radius_value" class="range-value"></span></label>
+                            <input type="range" class="form-range" id="border_radius" min="0" max="90" step="1" value="{{ initial_config.border_radius }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Ancho borde <span id="border_width_value" class="range-value"></span></label>
+                            <input type="range" class="form-range" id="border_width" min="0" max="20" step="1" value="{{ initial_config.border_width }}">
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Opacidad panel <span id="container_opacity_value" class="range-value"></span></label>
+                        <input type="range" class="form-range" id="container_opacity" min="10" max="100" step="1" value="{{ initial_config.container_opacity }}">
+                    </div>
+
+                    <div class="mt-3 switches-grid">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="multi_color" {% if initial_config.multi_color %}checked{% endif %}>
+                            <label class="form-check-label" for="multi_color">🎨 Multi-color por frases</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="led_border_dots" {% if initial_config.led_border_dots %}checked{% endif %}>
+                            <label class="form-check-label" for="led_border_dots">🔴 Puntos LED en borde</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="uppercase" {% if initial_config.uppercase %}checked{% endif %}>
+                            <label class="form-check-label" for="uppercase">Mayúsculas automáticas</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="blink">
+                            <label class="form-check-label" for="blink">Parpadeo</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="outline">
+                            <label class="form-check-label" for="outline">Contorno extra</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="shadow_enabled" checked>
+                            <label class="form-check-label" for="shadow_enabled">Glow / sombra activo</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="show_background_grid" checked>
+                            <label class="form-check-label" for="show_background_grid">Textura de fondo</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button class="btn btn-accent" type="button" id="btn-save-preset">
+                            <i class="bi bi-save"></i> Guardar preset
+                        </button>
+                        <button class="btn btn-outline-light" type="button" id="btn-fullscreen-preview">
+                            <i class="bi bi-arrows-fullscreen"></i> Fullscreen
+                        </button>
+                        <button class="btn btn-outline-light" type="button" id="btn-export-json">
+                            <i class="bi bi-download"></i> JSON
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="col-12 col-xl-8">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="panel-card">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="section-title mb-0">👁️ Vista previa</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="chip">F = fullscreen · Espacio = pausa</span>
+                                <span class="chip">URL dinámica para TV/pantalla</span>
+                            </div>
+                        </div>
+
+                        <div id="preview-shell" class="preview-shell">
+                            <div id="sign-preview" class="sign-stage">
+                                <div class="sign-panel">
+                                    <div class="led-border-container" id="preview-led-border"></div>
+                                    <div class="sign-track">
+                                        <div class="sign-text" id="sign-text-preview">🔥 Bienvenidos</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="small text-secondary mt-3">
+                            Sugerencia: abre la vista cartel en otra pantalla o TV y activa pantalla completa.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="panel-card">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="section-title mb-0">💾 Presets guardados</div>
+                            <button class="btn btn-outline-light btn-sm" id="btn-refresh-presets">
+                                <i class="bi bi-arrow-repeat"></i> Recargar
+                            </button>
+                        </div>
+                        <div id="presets-list" class="preset-grid">
+                            {% if presets %}
+                                {% for preset in presets %}
+                                    <div class="preset-card" data-id="{{ preset.id }}">
+                                        <div class="preset-card-top">
+                                            <div>
+                                                <div class="preset-name">{{ preset.name }}</div>
+                                                <div class="preset-meta">#{{ preset.id }} · {{ preset.payload.style|upper }} · {{ preset.payload.animation_mode }}</div>
+                                            </div>
+                                            <div class="preset-actions">
+                                                <button class="btn btn-sm btn-outline-warning btn-apply-preset" data-id="{{ preset.id }}">Aplicar</button>
+                                                <button class="btn btn-sm btn-outline-danger btn-delete-preset" data-id="{{ preset.id }}">Borrar</button>
+                                            </div>
+                                        </div>
+                                        <div class="preset-snippet">{{ preset.payload.message }}</div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-state">
+                                    Aún no hay presets guardados. Crea uno desde el panel izquierdo.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.APP_DEFAULT_CONFIG = {{ default_config|tojson }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
