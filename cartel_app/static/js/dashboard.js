@@ -19,10 +19,14 @@ const LED_PALETTE = [
 const formFields = {
     preset_name:        $("#preset_name"),
     message:            $("#message"),
+    render_mode:        $("#render_mode"),
     style:              $("#style"),
+    matrix_scene:       $("#matrix_scene"),
     animation_mode:     $("#animation_mode"),
     direction:          $("#direction"),
     font_family:        $("#font_family"),
+    scene_icon_left:    $("#scene_icon_left"),
+    scene_icon_right:   $("#scene_icon_right"),
     font_size:          $("#font_size"),
     speed:              $("#speed"),
     text_color:         $("#text_color"),
@@ -43,6 +47,9 @@ const formFields = {
     container_opacity:  $("#container_opacity"),
     multi_color:        $("#multi_color"),
     led_border_dots:    $("#led_border_dots"),
+    matrix_reflection:  $("#matrix_reflection"),
+    matrix_show_stars:  $("#matrix_show_stars"),
+    matrix_panel_gloss: $("#matrix_panel_gloss"),
     text_effect:        $("#text_effect"),
 };
 
@@ -51,6 +58,7 @@ const previewText = $("#sign-text-preview");
 const previewShell = $("#preview-shell");
 const presetsList = $("#presets-list");
 const paletteDots = $("#palette-dots");
+const previewMatrixEngine = window.MatrixSignEngine ? new window.MatrixSignEngine(previewRoot, { display: false }) : null;
 
 const rangeIndicators = [
     "font_size","speed","glow","brightness","letter_spacing",
@@ -333,6 +341,15 @@ function renderSign(root, textNode, config) {
     // Normalize message
     const normalizedMsg = config.uppercase ? message.toUpperCase() : message;
 
+    if (previewMatrixEngine && config.render_mode === 'matrix_scene') {
+        renderLedBorderDots(root, config);
+        previewMatrixEngine.render({ ...config, message: normalizedMsg });
+        return;
+    }
+    if (previewMatrixEngine) {
+        previewMatrixEngine.stop();
+    }
+
     // Text effects reset
     textNode.classList.remove('effect-rainbow', 'effect-fire', 'effect-ice', 'effect-matrix');
     clearDotStyle(textNode);
@@ -431,10 +448,11 @@ function renderSign(root, textNode, config) {
 // FORM
 // -------------------------------------------------------
 function setInitialValues(config) {
+    const merged = { ...(window.APP_DEFAULT_CONFIG || {}), ...(config || {}) };
     Object.entries(formFields).forEach(([key, el]) => {
-        if (!el || !(key in config)) return;
-        if (el.type === 'checkbox') el.checked = Boolean(config[key]);
-        else el.value = config[key];
+        if (!el || !(key in merged)) return;
+        if (el.type === 'checkbox') el.checked = Boolean(merged[key]);
+        else el.value = merged[key];
     });
     refreshRanges();
 }
@@ -474,6 +492,109 @@ function insertAtCursor(input, value) {
     input.focus();
     input.selectionStart = input.selectionEnd = start + value.length;
     input.dispatchEvent(new Event("input"));
+}
+
+
+const SCENE_PRESETS = {
+    hello_ghost: {
+        render_mode: "matrix_scene",
+        matrix_scene: "emoji_parade",
+        message: "Hello",
+        scene_icon_left: "👻",
+        scene_icon_right: "✨",
+        style: "literal_led",
+        animation_mode: "static",
+        multi_color: true,
+        text_color: "#ff8800",
+        accent_color: "#4fd7ff",
+        background_color: "#030303",
+        matrix_reflection: true,
+        matrix_show_stars: true,
+    },
+    eyes_alert: {
+        render_mode: "matrix_scene",
+        matrix_scene: "eyes",
+        message: "",
+        scene_icon_left: "",
+        scene_icon_right: "",
+        style: "literal_led",
+        animation_mode: "static",
+        multi_color: false,
+        text_color: "#ff2b2b",
+        accent_color: "#ffd27a",
+        background_color: "#040404",
+        matrix_reflection: true,
+        matrix_show_stars: false,
+    },
+    love_hearts: {
+        render_mode: "matrix_scene",
+        matrix_scene: "hearts",
+        message: "LOVE",
+        style: "literal_led",
+        animation_mode: "static",
+        multi_color: false,
+        text_color: "#ff4040",
+        accent_color: "#6df7ff",
+        background_color: "#040404",
+        matrix_reflection: true,
+        matrix_show_stars: false,
+    },
+    xmas_board: {
+        render_mode: "matrix_scene",
+        matrix_scene: "festive",
+        message: "HO HO!",
+        scene_icon_left: "🎅",
+        scene_icon_right: "🎄",
+        style: "literal_led",
+        animation_mode: "static",
+        multi_color: true,
+        text_color: "#ffffff",
+        accent_color: "#6dff70",
+        background_color: "#040404",
+        matrix_reflection: true,
+        matrix_show_stars: true,
+    },
+    stop_bus: {
+        render_mode: "matrix_scene",
+        matrix_scene: "stop_bus",
+        message: "STOP!!",
+        scene_icon_left: "",
+        scene_icon_right: "🚌",
+        style: "literal_led",
+        animation_mode: "static",
+        multi_color: false,
+        text_color: "#f6ff71",
+        accent_color: "#4fb4ff",
+        background_color: "#040404",
+        matrix_reflection: true,
+        matrix_show_stars: false,
+    },
+    offer_arrow: {
+        render_mode: "matrix_scene",
+        matrix_scene: "arrow_text",
+        message: "OFERTA",
+        style: "literal_led",
+        animation_mode: "bounce",
+        direction: "left",
+        multi_color: false,
+        text_color: "#ff7d3c",
+        accent_color: "#67fff5",
+        background_color: "#040404",
+        matrix_reflection: true,
+        matrix_show_stars: false,
+    },
+};
+
+function applyScenePreset(name) {
+    const preset = SCENE_PRESETS[name];
+    if (!preset) return;
+    Object.entries(preset).forEach(([key, value]) => {
+        const field = formFields[key];
+        if (!field) return;
+        if (field.type === 'checkbox') field.checked = Boolean(value);
+        else field.value = value;
+    });
+    updatePreview();
 }
 
 // -------------------------------------------------------
@@ -590,6 +711,10 @@ function bindEvents() {
             const text = btn.dataset.insert ?? btn.textContent;
             insertAtCursor(formFields.message, text);
         });
+    });
+
+    document.querySelectorAll(".scene-preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => applyScenePreset(btn.dataset.scenePreset));
     });
 
     $("#btn-save-preset").addEventListener("click", savePreset);

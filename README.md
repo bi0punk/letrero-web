@@ -1,55 +1,63 @@
-# 🔴 LED Sign Studio v2.0
+# LED Sign Studio v3.0
 
-Editor avanzado de carteles tipo LED / neón con Flask.
+Editor avanzado de carteles LED y neón con Flask, ahora con escenas matriciales programables inspiradas en paneles LED físicos de 20x64.
 
-## ✨ Novedades v2.0
+## Novedades v3.0
 
-- **Multi-color por frases**: Separa frases con `|` y cada una tendrá un color LED diferente  
-  Ejemplo: `ABIERTO|KIOSCO|PIZZA` → rojo | amarillo | verde
-- **Puntos LED en borde**: Ornamento de puntos LED multicolor alrededor del cartel
-- **Nuevos estilos**: Pixel Grid, Plasma animado, Retro neon (estilo tienda)
-- **Efectos de texto**: Rainbow, Fuego, Hielo, Matrix
-- **Nueva fuente**: Share Tech Mono (estilo digital)
-- **Dashboard renovado**: UI más clara, paleta LED visible
+- Nuevo modo `Escena matricial animada` sin romper el modo clásico de texto.
+- Plantillas rápidas tipo panel programable:
+  - Hello + emoji
+  - Ojos animados
+  - Corazones pulse
+  - Festivo / navidad
+  - STOP + bus
+  - Flecha + texto
+- Render por canvas con apariencia de matriz LED real.
+- Reflejo inferior tipo panel promocional.
+- Destellos de fondo y brillo de panel configurables.
+- Soporte para emojis laterales en escenas.
+- Presets siguen funcionando y pueden guardar tanto modo texto como modo escena.
 
-## 🚀 Cómo ejecutar
+## Cómo ejecutar
 
 ```bash
-pip install flask
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 python run.py
-# Abre http://localhost:5000
 ```
 
-O con el script:
+Abrir en el navegador:
+
 ```bash
-chmod +x start.sh
-./start.sh
+http://127.0.0.1:5000
 ```
 
-## 📋 Formato de mensaje multi-color
+## Modos disponibles
 
-```
-FRASE1|FRASE2|FRASE3
-```
+### 1. Texto / cartel clásico
+Mantiene el comportamiento original:
+- marquee
+- bounce
+- static
+- estilos neon / led / literal led / pixel / plasma / retro / lcd / billboard / minimal
 
-Cada segmento recibe un color de la paleta LED (rojo, amarillo, verde, azul, magenta, cyan, naranja, blanco).
+### 2. Escena matricial animada
+Usa un motor canvas nuevo para composiciones tipo panel LED:
+- `custom_banner`
+- `emoji_parade`
+- `eyes`
+- `hearts`
+- `festive`
+- `stop_bus`
+- `arrow_text`
 
-## 🎨 Estilos disponibles
+## Atajos
 
-| Estilo | Descripción |
-|--------|-------------|
-| LED Matrix | Punto luminoso por píxel, el más realista |
-| Neón clásico | Glow pulsante con animación |
-| Pixel Grid | Cuadrícula de píxeles |
-| Plasma | Fondo animado psicodélico |
-| Retro neon | Estilo carteles de tienda |
-| LED simple | Glow básico |
-| LCD Retro | Estilo pantalla verde antigua |
-| Billboard | Letras grandes y proyección |
-| Minimal | Sin efectos |
+- `F` -> pantalla completa
+- `Espacio` -> pausa / reanuda
+- `R` -> reinicia la vista cartel
 
-## ⌨️ Atajos
+## Nota técnica
 
-- `F` → Pantalla completa
-- `Espacio` → Pausar animación
-- `R` → Reiniciar animación
+El nuevo motor matricial fue agregado como capa separada (`matrix_engine.js`) para no alterar el flujo ya existente del render clásico.

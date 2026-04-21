@@ -73,6 +73,13 @@
 
                     <div class="row g-3">
                         <div class="col-6">
+                            <label class="form-label">Modo de render</label>
+                            <select class="form-select" id="render_mode">
+                                <option value="text">Texto / cartel clásico</option>
+                                <option value="matrix_scene">Escena matricial animada</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
                             <label class="form-label">Estilo LED</label>
                             <select class="form-select" id="style">
                                 <option value="literal_led">🔴 LED Matrix</option>
@@ -98,6 +105,18 @@
                             </select>
                         </div>
                         <div class="col-6">
+                            <label class="form-label">Escena matricial</label>
+                            <select class="form-select" id="matrix_scene">
+                                <option value="custom_banner">Banner programable</option>
+                                <option value="emoji_parade">Emoji parade</option>
+                                <option value="eyes">Ojos animados</option>
+                                <option value="hearts">Corazones pulse</option>
+                                <option value="festive">Festivo / navidad</option>
+                                <option value="stop_bus">STOP + bus</option>
+                                <option value="arrow_text">Flecha + texto</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
                             <label class="form-label">Animación</label>
                             <select class="form-select" id="animation_mode">
                                 <option value="marquee">Carrusel continuo</option>
@@ -112,6 +131,14 @@
                                 <option value="right">→ Derecha</option>
                             </select>
                         </div>
+                        <div class="col-6">
+                            <label class="form-label">Emoji / icono izquierdo</label>
+                            <input type="text" class="form-control" id="scene_icon_left" maxlength="8" value="{{ initial_config.scene_icon_left }}" placeholder="👾">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Emoji / icono derecho</label>
+                            <input type="text" class="form-control" id="scene_icon_right" maxlength="8" value="{{ initial_config.scene_icon_right }}" placeholder="✨">
+                        </div>
                         <div class="col-12">
                             <label class="form-label">Efecto de texto</label>
                             <select class="form-select" id="text_effect">
@@ -122,6 +149,19 @@
                                 <option value="matrix">💚 Matrix</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="scene-presets-card mt-3">
+                        <div class="scene-presets-header">Plantillas rápidas tipo panel programable</div>
+                        <div class="scene-presets-grid">
+                            <button type="button" class="scene-preset-btn" data-scene-preset="hello_ghost">Hello + emoji</button>
+                            <button type="button" class="scene-preset-btn" data-scene-preset="eyes_alert">Ojos</button>
+                            <button type="button" class="scene-preset-btn" data-scene-preset="love_hearts">Corazones</button>
+                            <button type="button" class="scene-preset-btn" data-scene-preset="xmas_board">Navidad</button>
+                            <button type="button" class="scene-preset-btn" data-scene-preset="stop_bus">STOP + bus</button>
+                            <button type="button" class="scene-preset-btn" data-scene-preset="offer_arrow">Oferta con flecha</button>
+                        </div>
+                        <div class="scene-presets-note">Estas plantillas usan el nuevo motor matricial. No reemplazan lo anterior; solo agregan escenas y composiciones similares a los paneles LED programables.</div>
                     </div>
 
                     <div class="row g-3 mt-1">
@@ -217,6 +257,18 @@
                             <input class="form-check-input" type="checkbox" id="show_background_grid" checked>
                             <label class="form-check-label" for="show_background_grid">Textura de fondo</label>
                         </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="matrix_reflection" {% if initial_config.matrix_reflection %}checked{% endif %}>
+                            <label class="form-check-label" for="matrix_reflection">Reflejo inferior panel</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="matrix_show_stars" {% if initial_config.matrix_show_stars %}checked{% endif %}>
+                            <label class="form-check-label" for="matrix_show_stars">Destellos / estrellas</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="matrix_panel_gloss" {% if initial_config.matrix_panel_gloss %}checked{% endif %}>
+                            <label class="form-check-label" for="matrix_panel_gloss">Brillo de panel</label>
+                        </div>
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 mt-4">
@@ -308,5 +360,6 @@ window.APP_DEFAULT_CONFIG = {{ default_config|tojson }};
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/matrix_engine.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

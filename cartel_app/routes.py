@@ -14,6 +14,8 @@ ALLOWED_ANIMATIONS = {"marquee", "bounce", "static"}
 ALLOWED_DIRECTIONS = {"left", "right"}
 ALLOWED_FONTS = {"orbitron", "bebas", "rubik", "mono", "pacifico", "digital"}
 ALLOWED_EFFECTS = {"none", "rainbow", "fire", "ice", "matrix"}
+ALLOWED_RENDER_MODES = {"text", "matrix_scene"}
+ALLOWED_MATRIX_SCENES = {"custom_banner", "emoji_parade", "eyes", "hearts", "festive", "stop_bus", "arrow_text"}
 
 
 def clamp(value: Any, min_value: int, max_value: int, default: int) -> int:
@@ -57,6 +59,8 @@ def sanitize_config(payload: Dict[str, Any]) -> Dict[str, Any]:
     direction = str(payload.get("direction", data["direction"])).lower()
     font_family = str(payload.get("font_family", data["font_family"])).lower()
     text_effect = str(payload.get("text_effect", data["text_effect"])).lower()
+    render_mode = str(payload.get("render_mode", data["render_mode"])).lower()
+    matrix_scene = str(payload.get("matrix_scene", data["matrix_scene"])).lower()
 
     data.update(
         {
@@ -87,6 +91,15 @@ def sanitize_config(payload: Dict[str, Any]) -> Dict[str, Any]:
             "multi_color": to_bool(payload.get("multi_color"), data["multi_color"]),
             "led_border_dots": to_bool(payload.get("led_border_dots"), data["led_border_dots"]),
             "text_effect": text_effect if text_effect in ALLOWED_EFFECTS else data["text_effect"],
+            "render_mode": render_mode if render_mode in ALLOWED_RENDER_MODES else data["render_mode"],
+            "matrix_scene": matrix_scene if matrix_scene in ALLOWED_MATRIX_SCENES else data["matrix_scene"],
+            "matrix_cols": clamp(payload.get("matrix_cols"), 32, 128, data["matrix_cols"]),
+            "matrix_rows": clamp(payload.get("matrix_rows"), 12, 40, data["matrix_rows"]),
+            "matrix_reflection": to_bool(payload.get("matrix_reflection"), data["matrix_reflection"]),
+            "matrix_show_stars": to_bool(payload.get("matrix_show_stars"), data["matrix_show_stars"]),
+            "matrix_panel_gloss": to_bool(payload.get("matrix_panel_gloss"), data["matrix_panel_gloss"]),
+            "scene_icon_left": str(payload.get("scene_icon_left", data["scene_icon_left"]))[:8],
+            "scene_icon_right": str(payload.get("scene_icon_right", data["scene_icon_right"]))[:8],
         }
     )
     return data

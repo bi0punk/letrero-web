@@ -10,6 +10,7 @@ const btnPause = document.getElementById("btn-toggle-pause");
 const btnReset = document.getElementById("btn-reset-motion");
 
 let paused = false;
+const matrixEngine = window.MatrixSignEngine ? new window.MatrixSignEngine(stage, { display: true }) : null;
 
 const LED_PALETTE = [
     '#ff2222','#ffff00','#22ff55','#2299ff',
@@ -242,6 +243,17 @@ function renderSign(config) {
 
     const normalizedMsg = config.uppercase ? message.toUpperCase() : message;
 
+    if (matrixEngine && config.render_mode === 'matrix_scene') {
+        renderLedBorderDots(stage, config);
+        matrixEngine.render({ ...config, message: normalizedMsg });
+        textNode.classList.remove("is-paused");
+        matrixEngine.setPaused(paused);
+        return;
+    }
+    if (matrixEngine) {
+        matrixEngine.stop();
+    }
+
     // Reset
     textNode.classList.remove('effect-rainbow','effect-fire','effect-ice','effect-matrix');
     clearDotStyle(textNode);
@@ -324,6 +336,9 @@ function renderSign(config) {
 function togglePause(force = null) {
     paused = force !== null ? Boolean(force) : !paused;
     textNode.classList.toggle("is-paused", paused);
+    if (matrixEngine) {
+        matrixEngine.setPaused(paused);
+    }
     btnPause.innerHTML = paused
         ? `<i class="bi bi-play-fill"></i> Reanudar`
         : `<i class="bi bi-pause-fill"></i> Pausar`;
