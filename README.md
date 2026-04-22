@@ -1,8 +1,6 @@
-# LED Sign Studio v3.0
+# LED Sign Studio 
 
 Editor avanzado de carteles LED y neón con Flask, ahora con escenas matriciales programables inspiradas en paneles LED físicos de 20x64.
-
-## Novedades v3.0
 
 - Nuevo modo `Escena matricial animada` sin romper el modo clásico de texto.
 - Plantillas rápidas tipo panel programable:
