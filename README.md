@@ -16,6 +16,12 @@ Editor avanzado de carteles LED y neón con Flask, ahora con escenas matriciales
 - Soporte para emojis laterales en escenas.
 - Presets siguen funcionando y pueden guardar tanto modo texto como modo escena.
 
+## Variables de entorno (opcional)
+
+```env
+SECRET_KEY=your-secret-key-here
+```
+
 ## Cómo ejecutar
 
 ```bash

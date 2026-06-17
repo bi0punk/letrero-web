@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from pathlib import Path
 
@@ -7,7 +8,7 @@ from .routes import bp
 
 def create_app() -> Flask:
     app = Flask(__name__, instance_relative_config=True)
-    app.config["SECRET_KEY"] = "cambiar-esto-en-produccion"
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "cambiar-esto-en-produccion")
     app.config["DATABASE"] = str(Path(app.instance_path) / "carteles.db")
 
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
