@@ -1,51 +1,68 @@
-# LED Sign Studio
+# letrero-web
 
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+Editor web de carteles LED y neón con Flask. Soporta modo texto clásico (marquee, bounce, static) y escenas matriciales animadas tipo panel LED físico, con presets persistidos en SQLite.
+
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python)](https://python.org)
-[![Flask](https://img.shields.io/badge/Flask-3.1%2B-000000?logo=flask)](https://flask.palletsprojects.com/)
-[![CI](https://github.com/drbash/letrero-web/actions/workflows/ci.yml/badge.svg)](https://github.com/drbash/letrero-web/actions)
-
-Editor avanzado de carteles LED y neón con Flask. Soporta modo texto clásico y escenas matriciales animadas tipo panel LED físico de 20x64.
+[![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask)](https://flask.palletsprojects.com/)
+[![CI](https://github.com/bi0punk/letrero-web/actions/workflows/ci.yml/badge.svg)](https://github.com/bi0punk/letrero-web/actions/workflows/ci.yml)
 
 ## Contenido
 
-- [Características](#caracter%C3%ADsticas)
+- [Características](#características)
+- [Arquitectura](#arquitectura)
 - [Stack](#stack)
-- [Estructura](#estructura)
-- [Requisitos](#requisitos)
-- [Instalación](#instalaci%C3%B3n)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Instalación](#instalación)
 - [Uso](#uso)
-- [Modos disponibles](#modos-disponibles)
-- [Atajos de teclado](#atajos-de-teclado)
 - [API](#api)
-- [Tests](#tests)
-- [Configuración](#configuraci%C3%B3n)
-- [CI/CD](#cicd)
-- [Limitaciones / Roadmap](#limitaciones--roadmap)
+- [Configuración](#configuración)
+- [Tests / CI](#tests--ci)
+- [Roadmap](#roadmap)
 - [Licencia](#licencia)
 
 ## Características
 
-- **Modo texto clásico**: marquee, bounce, static con múltiples estilos LED
-- **Escenas matriciales animadas**: composiciones tipo panel LED programable
-- **10+ estilos visuales**: neon, led, literal_led, pixel, plasma, retro, lcd, billboard, minimal
-- **Soporte para emojis**: emojis laterales y en escenas
-- **Reflejo inferior**: efecto de panel promocional
-- **Presets**: guardar y cargar configuraciones personalizadas
-- **Pantalla completa**: atajo `F` para modo inmersivo
-- **Pausa / reanudar**: espacio para controlar animación
+- **Modo texto clásico**: animaciones `marquee`, `bounce`, `static` con múltiples estilos LED.
+- **Escenas matriciales animadas**: composiciones tipo panel LED programable.
+- **9 estilos visuales**: `neon`, `led`, `literal_led`, `lcd`, `billboard`, `minimal`, `pixel`, `plasma`, `retro`.
+- **Efectos de texto**: `none`, `rainbow`, `fire`, `ice`, `matrix`.
+- **Escenas matriciales**: `custom_banner`, `emoji_parade`, `eyes`, `hearts`, `festive`, `stop_bus`, `arrow_text`.
+- **Presets**: guardar, listar, cargar y eliminar configuraciones (SQLite).
+- **Pantalla dedicada** en `/display` con configuración pasada por URL.
+- Sanitización estricta de la configuración en el backend (colores, tamaños, enums).
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+    subgraph Navegador
+        DASH[dashboard.html + dashboard.js<br/>editor de configuración]
+        DISP[display.html + display.js<br/>vista de cartel]
+        ENGINE[matrix_engine.js<br/>motor canvas matricial]
+    end
+
+    DASH -->|GET / , API presets| BP[Flask Blueprint cartel_app.routes]
+    DISP -->|GET /display?cfg=base64| BP
+    DISP --> ENGINE
+    DASH -->|POST/GET/DELETE /api/presets| BP
+
+    BP -->|sanitize_config| DEF[defaults.py]
+    BP -->|upsert/get/list/delete| DB[(SQLite: instance/carteles.db)]
+    BP --> TPL[templates: base/dashboard/display]
+```
 
 ## Stack
 
-| Componente | Tecnología |
-|---|---|
-| Backend | Python 3.11+, Flask 3.1+ |
-| Frontend | HTML5, CSS3, JavaScript (canvas) |
-| Motor matricial | `matrix_engine.js` (capa separada) |
-| DB | SQLite (presets) |
-| Testing | pytest |
+| Componente        | Tecnología                                   |
+|-------------------|----------------------------------------------|
+| Backend           | Python 3.11+, Flask 3.1                      |
+| Frontend          | HTML5, CSS3, JavaScript (canvas)             |
+| Motor matricial   | `matrix_engine.js` (capa separada)           |
+| Persistencia      | SQLite (presets)                             |
+| Testing           | pytest                                       |
 
-## Estructura
+## Estructura del repositorio
 
 ```
 letrero-web/
@@ -55,33 +72,30 @@ letrero-web/
 │   ├── defaults.py         # Config por defecto
 │   ├── routes.py           # Rutas Flask + sanitización
 │   ├── static/
-│   │   ├── css/
-│   │   ├── js/
-│   │   │   ├── matrix_engine.js
-│   │   │   └── main.js
-│   │   └── fonts/
+│   │   ├── css/app.css
+│   │   └── js/
+│   │       ├── dashboard.js
+│   │       ├── display.js
+│   │       └── matrix_engine.js
 │   └── templates/
-│       └── index.html
-├── instance/               # DB sqlite (creado al ejecutar)
-├── tests/
+│       ├── base.html
+│       ├── dashboard.html
+│       └── display.html
+├── instance/               # DB SQLite (creado al ejecutar)
+├── tests/test_smoke.py
 ├── run.py                  # Entry point
 ├── start.sh                # Script de inicio
 ├── requirements.txt
+├── pyproject.toml
 ├── .env.example
 ├── .github/workflows/ci.yml
-├── pyproject.toml
-└── README.md
+└── LICENSE
 ```
-
-## Requisitos
-
-- Python 3.11+
-- Navegador moderno (Chrome, Firefox, Edge)
 
 ## Instalación
 
 ```bash
-git clone https://github.com/drbash/letrero-web.git
+git clone https://github.com/bi0punk/letrero-web.git
 cd letrero-web
 python3 -m venv .venv
 source .venv/bin/activate
@@ -89,68 +103,70 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Abrir en el navegador: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+Abrir en el navegador: [http://127.0.0.1:5000](http://127.0.0.1:5000). También puedes usar `./start.sh`.
 
 ## Uso
 
 ### Modo texto / cartel clásico
 
-- `marquee`, `bounce`, `static`
-- Estilos: neon, led, literal_led, pixel, plasma, retro, lcd, billboard, minimal
+- Animaciones: `marquee`, `bounce`, `static`.
+- Estilos: `neon`, `led`, `literal_led`, `lcd`, `billboard`, `minimal`, `pixel`, `plasma`, `retro`.
 
 ### Escena matricial animada
 
-Motor canvas nuevo para composiciones tipo panel LED:
+Motor canvas para composiciones tipo panel LED, con escenas `custom_banner`, `emoji_parade`, `eyes`, `hearts`, `festive`, `stop_bus`, `arrow_text`.
 
-- `custom_banner`, `emoji_parade`, `eyes`, `hearts`, `festive`, `stop_bus`, `arrow_text`
+### Atajos de teclado
 
-## Atajos de teclado
-
-| Tecla | Acción |
-|---|---|
-| `F` | Pantalla completa |
-| `Espacio` | Pausa / reanuda |
-| `R` | Reinicia la vista |
+| Tecla     | Acción            |
+|-----------|-------------------|
+| `F`       | Pantalla completa |
+| `Espacio` | Pausa / reanuda   |
+| `R`       | Reinicia la vista |
 
 ## API
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/` | Interfaz principal |
-| POST | `/api/config` | Guardar configuración |
-| GET | `/api/config` | Cargar configuración |
-| POST | `/api/presets` | Guardar preset |
-| GET | `/api/presets` | Listar presets |
+| Método | Ruta                        | Descripción                          |
+|--------|-----------------------------|--------------------------------------|
+| GET    | `/`                         | Interfaz principal (dashboard)       |
+| GET    | `/display`                  | Vista de cartel (config por `?cfg=`) |
+| GET    | `/api/default-config`       | Configuración por defecto sanitizada |
+| GET    | `/api/presets`              | Listar presets                       |
+| POST   | `/api/presets`              | Guardar / actualizar preset          |
+| GET    | `/api/presets/<int:preset_id>` | Obtener un preset                 |
+| DELETE | `/api/presets/<int:preset_id>` | Eliminar un preset                |
 
-## Tests
+## Configuración
+
+Variables de entorno (ver `.env.example`):
+
+| Variable     | Default        | Descripción                |
+|--------------|----------------|----------------------------|
+| `SECRET_KEY` | (autogenerado) | Clave secreta de Flask     |
+| `DEBUG`      | `false`        | Activa el modo debug       |
+
+## Tests / CI
 
 ```bash
 pip install pytest
 pytest tests/ -v
 ```
 
-## Configuración
+CI — GitHub Actions (`.github/workflows/ci.yml`) sobre Python 3.12 con `uv`, disparado en push/PR a `main`/`master`:
 
-Variables de entorno (ver `.env.example`):
+- **lint** — `ruff check .`.
+- **test** — `pytest -q`.
 
-| Variable | Default | Descripción |
-|---|---|---|
-| `SECRET_KEY` | (autogenerado) | Clave secreta de Flask |
+## Roadmap
 
-## CI/CD
-
-GitHub Actions ejecuta lint (Ruff) y tests (pytest) en cada push/PR a main/master.
-
-## Limitaciones / Roadmap
-
-- [x] Modo texto clásico con 10 estilos
-- [x] Escenas matriciales animadas
-- [ ] Editor visual de escenas desde UI
-- [ ] Exportar cartel como GIF animado
-- [ ] Soporte multilenguaje (i18n)
-- [ ] Modo oscuro / claro
-- [ ] WebSockets para sincronización en tiempo real
+- [x] Modo texto clásico con 9 estilos.
+- [x] Escenas matriciales animadas.
+- [x] Presets persistidos en SQLite.
+- [ ] Editor visual de escenas desde la UI.
+- [ ] Exportar cartel como GIF animado.
+- [ ] Soporte multilenguaje (i18n).
+- [ ] WebSockets para sincronización en tiempo real.
 
 ## Licencia
 
-MIT
+MIT — ver [LICENSE](LICENSE).
