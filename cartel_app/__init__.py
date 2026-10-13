@@ -1,7 +1,8 @@
 import os
 import secrets
-from flask import Flask
 from pathlib import Path
+
+from flask import Flask
 
 from .db import init_db
 from .routes import bp

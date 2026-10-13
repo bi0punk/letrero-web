@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -25,7 +23,7 @@ def test_app_creates():
 
 
 def test_routes_import():
-    from cartel_app.routes import sanitize_config, clamp
+    from cartel_app.routes import clamp, sanitize_config
     assert callable(sanitize_config)
     assert callable(clamp)
 

@@ -1,4 +1,6 @@
-DEFAULT_CONFIG = {
+from typing import Any
+
+DEFAULT_CONFIG: dict[str, Any] = {
     "preset_name": "Cartel principal",
     "message": "🔥 BIENVENIDOS|⚡ KAMASYS|🚀 TECH",
     "style": "literal_led",

@@ -1,6 +1,6 @@
 import json
 import sqlite3
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from flask import current_app, g
 
@@ -12,7 +12,7 @@ def get_db() -> sqlite3.Connection:
     return g.db
 
 
-def close_db(e=None) -> None:
+def close_db(_e=None) -> None:
     db = g.pop("db", None)
     if db is not None:
         db.close()
@@ -35,7 +35,7 @@ def init_db() -> None:
     current_app.teardown_appcontext(close_db)
 
 
-def list_presets() -> List[Dict[str, Any]]:
+def list_presets() -> list[dict[str, Any]]:
     rows = get_db().execute(
         "SELECT id, name, payload, created_at, updated_at FROM presets ORDER BY updated_at DESC, id DESC"
     ).fetchall()
@@ -55,7 +55,7 @@ def list_presets() -> List[Dict[str, Any]]:
     return presets
 
 
-def get_preset(preset_id: int) -> Optional[Dict[str, Any]]:
+def get_preset(preset_id: int) -> dict[str, Any] | None:
     row = get_db().execute(
         "SELECT id, name, payload, created_at, updated_at FROM presets WHERE id = ?",
         (preset_id,),
@@ -72,7 +72,7 @@ def get_preset(preset_id: int) -> Optional[Dict[str, Any]]:
     }
 
 
-def upsert_preset(name: str, payload: Dict[str, Any], preset_id: Optional[int] = None) -> Dict[str, Any]:
+def upsert_preset(name: str, payload: dict[str, Any], preset_id: int | None = None) -> dict[str, Any]:
     db = get_db()
     if preset_id:
         db.execute(
@@ -94,9 +94,13 @@ def upsert_preset(name: str, payload: Dict[str, Any], preset_id: Optional[int] =
     db.commit()
 
     if preset_id:
-        return get_preset(preset_id)
+        saved = get_preset(preset_id)
+        assert saved is not None
+        return saved
     last_id = db.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
-    return get_preset(last_id)
+    saved = get_preset(last_id)
+    assert saved is not None
+    return saved
 
 
 def delete_preset(preset_id: int) -> bool:

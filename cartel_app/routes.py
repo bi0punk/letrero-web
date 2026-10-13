@@ -1,6 +1,6 @@
 import base64
 import json
-from typing import Any, Dict
+from typing import Any
 
 from flask import Blueprint, jsonify, render_template, request
 
@@ -44,7 +44,7 @@ def to_bool(value: Any, default: bool = False) -> bool:
     return default
 
 
-def sanitize_config(payload: Dict[str, Any]) -> Dict[str, Any]:
+def sanitize_config(payload: dict[str, Any]) -> dict[str, Any]:
     data = dict(DEFAULT_CONFIG)
     if not isinstance(payload, dict):
         return data
